@@ -79,8 +79,11 @@ router.get('/search', async (req, res) => {
 // GET /top-reviews
 router.get('/top-reviews', async (req, res, next) => {
   try {
-    const sortBy = req.query.sort || 'helpful';
-    const page = parseInt(req.query.page) || 1;
+    const sortBy = ['helpful', 'rating', 'newest'].includes(req.query.sort)
+      ? req.query.sort
+      : 'helpful';
+    const parsedPage = parseInt(req.query.page, 10);
+    const page = Number.isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
     const perPage = 15;
 
     let sortField = { helpful: -1 };
@@ -88,26 +91,52 @@ router.get('/top-reviews', async (req, res, next) => {
     if (sortBy === 'newest') sortField = { date: -1 };
 
     const total = await Review.countDocuments();
-    const totalPages = Math.ceil(total / perPage);
-    const rawReviews = await Review.find().sort(sortField).skip((page - 1) * perPage).limit(perPage).lean();
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    const currentPage = Math.min(page, totalPages);
+    const rawReviews = await Review.find()
+      .sort(sortField)
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage)
+      .lean();
 
-    const reviews = [];
-    for (const rv of rawReviews) {
-      const restaurant = await Restaurant.findOne({ id: rv.restaurantId }).lean();
-      // Use $or to support both seeded reviews (userId = 'U001' string)
-      // and new reviews created by logged-in users (userId = MongoDB ObjectId)
-      const user = await findUserByIdentifier(rv.userId);
-      reviews.push({ ...rv, restaurant, reviewer: user });
+    const restaurantIds = [...new Set(rawReviews.map((rv) => rv.restaurantId).filter(Boolean))];
+    const userIdentifiers = [...new Set(rawReviews.map((rv) => (rv.userId ? rv.userId.toString() : '')).filter(Boolean))];
+
+    const objectIds = userIdentifiers
+      .filter((id) => mongoose.Types.ObjectId.isValid(id))
+      .map((id) => new mongoose.Types.ObjectId(id));
+
+    const [restaurants, users] = await Promise.all([
+      Restaurant.find({ id: { $in: restaurantIds } }).lean(),
+      User.find({
+        $or: [
+          { id: { $in: userIdentifiers } },
+          ...(objectIds.length > 0 ? [{ _id: { $in: objectIds } }] : [])
+        ]
+      }).lean()
+    ]);
+
+    const restaurantById = new Map(restaurants.map((restaurant) => [restaurant.id, restaurant]));
+    const userByIdentifier = new Map();
+    for (const user of users) {
+      if (user.id) userByIdentifier.set(user.id.toString(), user);
+      if (user._id) userByIdentifier.set(user._id.toString(), user);
     }
+
+    const reviews = rawReviews.map((rv) => ({
+      ...rv,
+      restaurant: restaurantById.get(rv.restaurantId) || null,
+      reviewer: userByIdentifier.get(rv.userId ? rv.userId.toString() : '') || null
+    }));
 
     res.render('top-reviews', {
       title: 'Top Reviews - DLSU Eats',
       reviews,
       sort: sortBy,
-      currentPage: page,
+      currentPage,
       totalPages,
-      prevPage: page > 1 ? page - 1 : null,
-      nextPage: page < totalPages ? page + 1 : null
+      prevPage: currentPage > 1 ? currentPage - 1 : null,
+      nextPage: currentPage < totalPages ? currentPage + 1 : null
     });
   } catch (err) {
     next(err);

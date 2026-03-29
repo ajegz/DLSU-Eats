@@ -17,7 +17,7 @@
         <div class="review-card" onclick="window.location='/reviews/{{_id}}'">
             <div class="review-header">
                 {{#if restaurant}}
-                <img src="/{{restaurant.image}}" alt="{{restaurant.name}}" class="top-review-restaurant-icon" onerror="this.src='https://via.placeholder.com/96x96?text=Food'">
+                <img src="{{assetPath restaurant.image}}" alt="{{restaurant.name}}" class="top-review-restaurant-icon" onerror="this.src='https://via.placeholder.com/96x96?text=Food'">
                 {{else}}
                 <img src="https://via.placeholder.com/96x96?text=Food" alt="Restaurant unavailable" class="top-review-restaurant-icon">
                 {{/if}}
