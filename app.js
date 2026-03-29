@@ -12,11 +12,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const isProduction = process.env.NODE_ENV === 'production';
 const mongoUriFromEnv = process.env.MONGO_URI || process.env.mongo_uri;
-const MONGO_URI = mongoUriFromEnv || 'mongodb://127.0.0.1:27017/dlsu-eats';
+const MONGO_URI = mongoUriFromEnv;
 const SESSION_SECRET = process.env.SESSION_SECRET || 'dlsu-eats-dev-secret';
 
-if (isProduction && !mongoUriFromEnv) {
-  console.error('Missing MongoDB URI in production. Set MONGO_URI (or mongo_uri) in Render environment variables.');
+if (!MONGO_URI) {
+  console.error('Missing MongoDB URI. Set MONGO_URI (or mongo_uri) in environment variables.');
   process.exit(1);
 }
 
@@ -25,7 +25,7 @@ if (isProduction) {
 }
 
 // ─── Database ────────────────────────────────────────────────────────────────
-console.log(`MongoDB URI source: ${mongoUriFromEnv ? (process.env.MONGO_URI ? 'MONGO_URI' : 'mongo_uri') : 'default-local'}`);
+console.log(`MongoDB URI source: ${process.env.MONGO_URI ? 'MONGO_URI' : 'mongo_uri'}`);
 mongoose.connect(MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
