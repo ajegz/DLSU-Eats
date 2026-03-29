@@ -10,7 +10,13 @@ const DEFAULT_AVATAR_PATH = '/assets/images/icons/default-avatar.svg';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/dlsu-eats';
+const isProduction = process.env.NODE_ENV === 'production';
+const MONGO_URI = process.env.MONGO_URI || process.env.mongo_uri || 'mongodb://127.0.0.1:27017/dlsu-eats';
+const SESSION_SECRET = process.env.SESSION_SECRET || 'dlsu-eats-dev-secret';
+
+if (isProduction) {
+  app.set('trust proxy', 1);
+}
 
 // ─── Database ────────────────────────────────────────────────────────────────
 mongoose.connect(MONGO_URI)
@@ -70,14 +76,16 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'dlsu-eats-dev-secret',
+  secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  proxy: isProduction,
   store: MongoStore.create({ mongoUrl: MONGO_URI }),
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     httpOnly: true,
-    sameSite: 'lax'
+    sameSite: 'lax',
+    secure: isProduction
   }
 }));
 
