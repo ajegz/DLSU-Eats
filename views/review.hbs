@@ -1,0 +1,122 @@
+<div class="container-narrow">
+    <div class="review-card">
+        <div style="margin-bottom:1rem;">
+            <a href="/restaurants/{{restaurant.id}}" class="text-muted">← Back to {{restaurant.name}}</a>
+        </div>
+
+        <div class="review-header">
+            <div>
+                <h1>{{review.title}} {{#if review.edited}}<span class="badge badge-gold">Edited</span>{{/if}}</h1>
+                <div class="card-rating" style="font-size:1.25rem; margin:0.5rem 0;">
+                    {{stars review.rating}} {{review.rating}}/5
+                </div>
+            </div>
+            <div class="review-date">{{review.date}}</div>
+        </div>
+
+        <div class="review-author" style="margin:1rem 0;">
+            By {{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}
+            {{#if isAuthor}}
+            &nbsp;|&nbsp;
+            <a href="/reviews/{{review._id}}/edit" class="btn btn-outline" style="padding:0.25rem 0.75rem; font-size:0.875rem;">Edit Review</a>
+            &nbsp;
+            <button onclick="confirmDelete()" class="btn btn-outline" style="padding:0.25rem 0.75rem; font-size:0.875rem; color:#dc2626; border-color:#dc2626;">Delete Review</button>
+            {{/if}}
+        </div>
+
+        <div class="review-body" style="font-size:1.125rem; line-height:1.8;">
+            {{review.body}}
+        </div>
+
+        {{#if review.mediaItems.length}}
+        <div style="margin-top:1.5rem;">
+            <h3>Attached Media</h3>
+            <div class="media-grid">
+                {{#each review.mediaItems}}
+                <div class="media-preview-card">
+                    {{#if isVideo}}
+                    <video controls class="review-media-item" src="{{path}}"></video>
+                    {{else}}
+                    <img src="{{path}}" alt="Review media" class="review-media-item">
+                    {{/if}}
+                </div>
+                {{/each}}
+            </div>
+        </div>
+        {{/if}}
+
+        <hr style="margin:2rem 0;">
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h3>Was this review helpful?</h3>
+            <div style="display:flex; gap:1rem; font-size:1rem;">
+                <span id="helpful-count">👍 {{review.helpful}}</span>
+                <span id="unhelpful-count">👎 {{review.unhelpful}}</span>
+            </div>
+        </div>
+
+        {{#if user}}
+        {{#if hasVoted}}
+        <p class="text-muted" id="vote-status">You have already voted on this review.</p>
+        {{else}}
+        <div class="review-actions" id="vote-buttons">
+            <button class="review-action-btn" onclick="vote('helpful')">👍 Helpful</button>
+            <button class="review-action-btn" onclick="vote('unhelpful')">👎 Not Helpful</button>
+        </div>
+        <p class="text-muted hidden" id="vote-status"></p>
+        {{/if}}
+        {{/if}}
+
+        {{#if review.ownerResponse}}
+        <div class="owner-response" style="margin-top:2rem;">
+            <div class="owner-response-header">Response from {{restaurant.name}}:</div>
+            <p style="margin:0.5rem 0 0 0;">{{review.ownerResponse.text}}</p>
+            <p class="text-muted" style="font-size:0.875rem; margin-top:0.5rem;">Responded on {{review.ownerResponse.date}}</p>
+        </div>
+        {{/if}}
+    </div>
+</div>
+
+{{#if isAuthor}}
+<form id="delete-form" action="/reviews/{{review._id}}/delete" method="POST" style="display:none;"></form>
+{{/if}}
+
+<script>
+const reviewId = '{{review._id}}';
+
+function confirmDelete() {
+  if (confirm('Are you sure you want to delete this review? This action cannot be undone.')) {
+    document.getElementById('delete-form').submit();
+  }
+}
+
+async function vote(type) {
+  const res = await fetch(`/reviews/${reviewId}/vote`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ vote: type })
+  });
+
+    const data = await res.json();
+
+  if (res.ok) {
+    document.getElementById('helpful-count').textContent = '👍 ' + data.helpful;
+    document.getElementById('unhelpful-count').textContent = '👎 ' + data.unhelpful;
+        const voteButtons = document.getElementById('vote-buttons');
+        if (voteButtons) voteButtons.classList.add('hidden');
+        const voteStatus = document.getElementById('vote-status');
+        if (voteStatus) {
+            voteStatus.textContent = 'You have already voted on this review.';
+            voteStatus.classList.remove('hidden');
+        }
+    } else if (res.status === 409 && data.alreadyVoted) {
+        const voteButtons = document.getElementById('vote-buttons');
+        if (voteButtons) voteButtons.classList.add('hidden');
+        const voteStatus = document.getElementById('vote-status');
+        if (voteStatus) {
+            voteStatus.textContent = 'You have already voted on this review.';
+            voteStatus.classList.remove('hidden');
+        }
+  }
+}
+</script>

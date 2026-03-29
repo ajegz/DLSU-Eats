@@ -1,0 +1,63 @@
+<div class="container">
+    <h1>Top Reviews</h1>
+    <p class="text-muted">Browse the community's most helpful and highest-rated reviews.</p>
+
+    <form method="GET" action="/top-reviews" class="filter-bar" style="margin-bottom:1.5rem;">
+        <div class="filter-tags">
+            <span>Sort by:</span>
+            <button type="submit" name="sort" value="helpful" class="filter-tag {{#if (eq sort 'helpful')}}active{{/if}}">Most Helpful</button>
+            <button type="submit" name="sort" value="rating" class="filter-tag {{#if (eq sort 'rating')}}active{{/if}}">Highest Rating</button>
+            <button type="submit" name="sort" value="newest" class="filter-tag {{#if (eq sort 'newest')}}active{{/if}}">Newest</button>
+        </div>
+    </form>
+
+    {{#if reviews.length}}
+    <div class="review-list">
+        {{#each reviews}}
+        <div class="review-card" onclick="window.location='/reviews/{{_id}}'">
+            <div class="review-header">
+                {{#if restaurant}}
+                <img src="/{{restaurant.image}}" alt="{{restaurant.name}}" class="top-review-restaurant-icon" onerror="this.src='https://via.placeholder.com/96x96?text=Food'">
+                {{else}}
+                <img src="https://via.placeholder.com/96x96?text=Food" alt="Restaurant unavailable" class="top-review-restaurant-icon">
+                {{/if}}
+                <div>
+                    <div class="reviewer-name">Reviewed by {{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}</div>
+                    <div class="review-restaurant">
+                        {{#if restaurant}}
+                        <a href="/restaurants/{{restaurant.id}}" onclick="event.stopPropagation()">{{restaurant.name}}</a>
+                        {{else}}
+                        <span class="text-muted">Restaurant unavailable</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <div style="margin-left:auto;">{{stars rating}} <strong>{{rating}}/5</strong></div>
+            </div>
+            <h3 class="review-title">{{title}}</h3>
+            <p class="review-body">{{truncate body 200}}</p>
+            <div class="review-footer">
+                <span>{{date}}</span>
+                <span>&#128077; {{helpful}} helpful</span>
+                {{#if ownerResponse}}<span class="badge badge-green">Owner responded</span>{{/if}}
+            </div>
+        </div>
+        {{/each}}
+    </div>
+
+    <div class="pagination" style="margin-top:2rem;">
+        {{#if prevPage}}
+        <a href="/top-reviews?sort={{sort}}&page={{prevPage}}" class="btn btn-outline">&larr; Previous</a>
+        {{/if}}
+        <span class="page-info">Page {{currentPage}}</span>
+        {{#if nextPage}}
+        <a href="/top-reviews?sort={{sort}}&page={{nextPage}}" class="btn btn-outline">Next &rarr;</a>
+        {{/if}}
+    </div>
+    {{else}}
+    <div class="empty-state">
+        <h3>No reviews yet</h3>
+        <p>Be the first to write a review!</p>
+        <a href="/restaurants" class="btn btn-primary">Browse Restaurants</a>
+    </div>
+    {{/if}}
+</div>

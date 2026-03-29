@@ -1,0 +1,130 @@
+<div class="container">
+    <h1>All Restaurants</h1>
+
+    <div class="page-layout">
+        <aside class="sidebar">
+            <form method="GET" action="/restaurants" id="filter-form">
+                <div class="filter-group">
+                    <h4>Search</h4>
+                    <input type="text" name="search" id="search-input" class="form-control" placeholder="Search restaurants..." value="{{filters.search}}">
+                </div>
+
+                <div class="filter-group">
+                    <h4>Campus Location</h4>
+                    <div class="filter-tags" id="campus-filters">
+                        <span class="filter-tag {{#if (eq filters.campus 'inside')}}active{{/if}}" data-filter="campus" data-value="inside">Inside Campus</span>
+                        <span class="filter-tag {{#if (eq filters.campus 'outside')}}active{{/if}}" data-filter="campus" data-value="outside">Outside Campus</span>
+                    </div>
+                    <input type="hidden" name="campus" id="campus-input" value="{{filters.campus}}">
+                </div>
+
+                <div class="filter-group">
+                    <h4>Food Style</h4>
+                    <div class="filter-tags" id="food-style-filters">
+                        {{#each foodStyles}}
+                        <span class="filter-tag {{#if (eq ../filters.foodStyle this)}}active{{/if}}" data-filter="foodStyle" data-value="{{this}}">{{this}}</span>
+                        {{/each}}
+                    </div>
+                    <input type="hidden" name="foodStyle" id="foodStyle-input" value="{{filters.foodStyle}}">
+                </div>
+
+                <div class="filter-group">
+                    <h4>Price Range</h4>
+                    <div class="filter-tags" id="price-filters">
+                        <span class="filter-tag {{#if (eq filters.price '₱')}}active{{/if}}" data-filter="price" data-value="₱">₱</span>
+                        <span class="filter-tag {{#if (eq filters.price '₱₱')}}active{{/if}}" data-filter="price" data-value="₱₱">₱₱</span>
+                        <span class="filter-tag {{#if (eq filters.price '₱₱₱')}}active{{/if}}" data-filter="price" data-value="₱₱₱">₱₱₱</span>
+                    </div>
+                    <input type="hidden" name="price" id="price-input" value="{{filters.price}}">
+                </div>
+
+                <div class="filter-group">
+                    <h4>Minimum Rating</h4>
+                    <select name="rating" class="form-control">
+                        <option value="">All Ratings</option>
+                        <option value="4.5" {{#if (eq filters.rating '4.5')}}selected{{/if}}>4.5+ Stars</option>
+                        <option value="4.0" {{#if (eq filters.rating '4.0')}}selected{{/if}}>4.0+ Stars</option>
+                        <option value="3.5" {{#if (eq filters.rating '3.5')}}selected{{/if}}>3.5+ Stars</option>
+                        <option value="3.0" {{#if (eq filters.rating '3.0')}}selected{{/if}}>3.0+ Stars</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">Apply Filters</button>
+                <a href="/restaurants" class="btn btn-outline" style="width:100%; margin-top:0.5rem; text-align:center;">Clear Filters</a>
+            </form>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-header">
+                <div class="text-muted">{{count}} restaurant{{#if (gt count 1)}}s{{/if}} found</div>
+                <div class="filter-group-inline">
+                    <label for="sort-select">Sort By:</label>
+                    <select id="sort-select" class="form-control" onchange="setSortAndSubmit(this.value)">
+                        <option value="rating-high" {{#if (eq filters.sort 'rating-high')}}selected{{/if}}>Highest Rated</option>
+                        <option value="rating-low" {{#if (eq filters.sort 'rating-low')}}selected{{/if}}>Most Reviewed</option>
+                        <option value="price-low" {{#if (eq filters.sort 'price-low')}}selected{{/if}}>Price: Low to High</option>
+                        <option value="price-high" {{#if (eq filters.sort 'price-high')}}selected{{/if}}>Price: High to Low</option>
+                        <option value="name-asc" {{#if (eq filters.sort 'name-asc')}}selected{{/if}}>Name (A-Z)</option>
+                        <option value="name-desc" {{#if (eq filters.sort 'name-desc')}}selected{{/if}}>Name (Z-A)</option>
+                    </select>
+                    <input type="hidden" name="sort" id="sort-input" form="filter-form" value="{{filters.sort}}">
+                </div>
+            </div>
+
+            {{#if restaurants.length}}
+            <div class="card-grid card-grid-small">
+                {{#each restaurants}}
+                <div class="card" onclick="window.location='/restaurants/{{id}}'">
+                    <img src="/{{image}}" alt="{{name}}" class="card-image" onerror="this.src='https://via.placeholder.com/400x300?text={{name}}'">
+                    <div class="card-content">
+                        <h3>{{name}}</h3>
+                        <div class="card-rating">
+                            <span class="stars">{{stars rating}}</span>
+                            <span>{{rating}}/5 ({{ratingCount}})</span>
+                        </div>
+                        <div class="card-tags">
+                            {{#each foodStyles}}<span class="tag">{{this}}</span>{{/each}}
+                        </div>
+                        <div class="card-info">
+                            <span class="price-range">{{priceRange}}</span> &bull;
+                            <span>{{location}}</span>
+                        </div>
+                        {{#if grabAvailable}}<a href="{{grabLink}}" class="delivery-badge grab" target="_blank" onclick="event.stopPropagation()">Grab</a>{{/if}}
+                        {{#if foodPandaAvailable}}<a href="{{foodPandaLink}}" class="delivery-badge foodpanda" target="_blank" onclick="event.stopPropagation()">FoodPanda</a>{{/if}}
+                        <span class="campus-badge {{campusClass insideCampus}}">{{campusBadge insideCampus}}</span>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+            {{else}}
+            <div class="empty-state">
+                <h3>No restaurants found</h3>
+                <p>Try adjusting your filters or <a href="/restaurants">clear all filters</a>.</p>
+            </div>
+            {{/if}}
+        </main>
+    </div>
+</div>
+
+<script>
+function setSortAndSubmit(val) {
+  document.getElementById('sort-input').value = val;
+  document.getElementById('filter-form').submit();
+}
+// Toggle filter tags
+document.querySelectorAll('.filter-tag[data-filter]').forEach(tag => {
+  tag.addEventListener('click', function() {
+    const filterName = this.dataset.filter;
+    const val = this.dataset.value;
+    const input = document.getElementById(filterName + '-input');
+    if (input.value === val) {
+      input.value = '';
+      this.classList.remove('active');
+    } else {
+      document.querySelectorAll(`.filter-tag[data-filter="${filterName}"]`).forEach(t => t.classList.remove('active'));
+      input.value = val;
+      this.classList.add('active');
+    }
+  });
+});
+</script>

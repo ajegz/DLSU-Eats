@@ -1,0 +1,112 @@
+<div class="container-narrow">
+    <h1 class="text-center">Register for DLSU Eats</h1>
+
+    <div class="restaurant-detail">
+        {{#if error}}
+        <div class="alert alert-error">{{error}}</div>
+        {{/if}}
+
+        <form action="/auth/register" method="POST" enctype="multipart/form-data" id="register-form" novalidate>
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="Juan Dela Cruz" value="{{formData.name}}" required minlength="2" maxlength="100">
+                <p class="error-msg" id="name-error"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="your.email@dlsu.edu.ph" value="{{formData.email}}" required>
+                <p class="error-msg" id="email-error"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password * <small class="text-muted">(min 6 characters)</small></label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Create a strong password" required minlength="6">
+                <p class="error-msg" id="password-error"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="avatar">Avatar (Optional)</label>
+                <input type="file" id="avatar" name="avatar" class="form-control" accept=".jpg,.jpeg,.png,.gif,.webp,image/*">
+                <p class="error-msg" id="avatar-error"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="bio">Bio (Optional)</label>
+                <textarea id="bio" name="bio" class="form-control" placeholder="Tell us about yourself..." style="min-height: 100px;" maxlength="500">{{formData.bio}}</textarea>
+                <p class="error-msg" id="bio-error"></p>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+        </form>
+
+        <hr style="margin: 2rem 0;">
+        <p class="text-center">
+            Already have an account? <a href="/auth/login">Login here</a>
+        </p>
+    </div>
+</div>
+
+<script>
+const registerForm = document.getElementById('register-form');
+
+function setFieldError(fieldId, message) {
+    document.getElementById(fieldId + '-error').textContent = message;
+}
+
+function validateRegisterForm() {
+    let valid = true;
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const bio = document.getElementById('bio').value;
+    const avatarInput = document.getElementById('avatar');
+
+    setFieldError('name', '');
+    setFieldError('email', '');
+    setFieldError('password', '');
+    setFieldError('bio', '');
+    setFieldError('avatar', '');
+
+    if (name.length < 2 || name.length > 100) {
+        setFieldError('name', 'Name must be between 2 and 100 characters.');
+        valid = false;
+    }
+
+    if (!email || !document.getElementById('email').checkValidity()) {
+        setFieldError('email', 'Please enter a valid email address.');
+        valid = false;
+    }
+
+    if (password.length < 6) {
+        setFieldError('password', 'Password must be at least 6 characters.');
+        valid = false;
+    }
+
+    if (bio.length > 500) {
+        setFieldError('bio', 'Bio cannot exceed 500 characters.');
+        valid = false;
+    }
+
+    if (avatarInput.files.length > 0) {
+        const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowed.includes(avatarInput.files[0].type)) {
+            setFieldError('avatar', 'Avatar must be a JPG, PNG, GIF, or WEBP image.');
+            valid = false;
+        }
+    }
+
+    return valid;
+}
+
+registerForm.addEventListener('submit', function (event) {
+    if (!validateRegisterForm()) {
+        event.preventDefault();
+    }
+});
+
+['name', 'email', 'password', 'bio', 'avatar'].forEach(function (id) {
+    document.getElementById(id).addEventListener('input', validateRegisterForm);
+    document.getElementById(id).addEventListener('change', validateRegisterForm);
+});
+</script>

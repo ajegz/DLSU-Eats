@@ -1,0 +1,104 @@
+<div class="container">
+    <h1>Owner Dashboard</h1>
+    <p class="text-muted">Welcome, {{user.name}} — manage your restaurants and respond to reviews.</p>
+
+    {{#if error}}
+    <div class="alert alert-error">{{error}}</div>
+    {{/if}}
+
+    {{#if restaurants.length}}
+    <div class="dashboard-section">
+        <h2>Your Restaurants</h2>
+        <div class="card-grid">
+            {{#each restaurants}}
+            <div class="card" onclick="window.location='/restaurants/{{id}}'">
+                <img src="/{{image}}" alt="{{name}}" class="card-image" onerror="this.src='https://via.placeholder.com/400x300?text={{name}}'">
+                <div class="card-content">
+                    <h3>{{name}}</h3>
+                    <div class="card-rating">{{stars rating}} {{rating}}/5 ({{ratingCount}} reviews)</div>
+                    <div class="card-info"><span>{{location}}</span></div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+    {{/if}}
+
+    <div class="dashboard-section">
+        <h2>Customer Reviews</h2>
+        {{#if reviews.length}}
+        <table>
+            <caption>Manage Customer Reviews</caption>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Restaurant</th>
+                    <th>Customer</th>
+                    <th>Rating</th>
+                    <th>Review Title</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each reviews}}
+                <tr>
+                    <td>{{date}}</td>
+                    <td>{{restaurant.name}}</td>
+                    <td>{{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}</td>
+                    <td>{{stars rating}} {{rating}}/5</td>
+                    <td><a href="/reviews/{{_id}}">{{title}}</a></td>
+                    <td>
+                        {{#if ownerResponse}}
+                        <span class="badge badge-green">Responded</span>
+                        {{else}}
+                        <span class="badge badge-gold">Pending</span>
+                        {{/if}}
+                    </td>
+                    <td>
+                        {{#if ownerResponse}}
+                        <button class="btn btn-outline" disabled>Responded</button>
+                        {{else}}
+                        <button class="btn btn-primary" onclick="showForm('{{_id}}', '{{title}}', '{{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}', '{{date}}')">Respond</button>
+                        {{/if}}
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        {{else}}
+        <div class="empty-state">
+            <h3>No reviews yet</h3>
+            <p>Your restaurants haven't received any reviews yet.</p>
+        </div>
+        {{/if}}
+    </div>
+
+    <div class="restaurant-detail hidden" id="response-form-container">
+        <h3>Respond to Review</h3>
+        <div id="review-context" class="mb-1"></div>
+        <form action="/owner/reviews/__REVIEW_ID__/reply" method="POST" id="response-form">
+            <div class="form-group">
+                <label for="responseText">Your Response</label>
+                <textarea id="responseText" name="responseText" class="form-control" placeholder="Thank the customer and address their feedback..." required style="min-height:120px;"></textarea>
+            </div>
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Submit Response</button>
+                <button type="button" class="btn btn-outline" onclick="hideForm()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function showForm(id, title, reviewer, date) {
+  document.getElementById('response-form-container').classList.remove('hidden');
+  document.getElementById('review-context').innerHTML =
+    `<div class="review-card" style="padding:1rem;"><strong>${title}</strong><br>By ${reviewer} on ${date}</div>`;
+  document.getElementById('response-form').action = '/owner/reviews/' + id + '/reply';
+  document.getElementById('response-form-container').scrollIntoView({ behavior: 'smooth' });
+}
+function hideForm() {
+  document.getElementById('response-form-container').classList.add('hidden');
+}
+</script>

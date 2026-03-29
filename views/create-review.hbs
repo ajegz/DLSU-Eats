@@ -1,0 +1,116 @@
+<div class="container-narrow">
+    <h1>Write a Review</h1>
+    <p class="text-muted">Review for <strong>{{restaurant.name}}</strong></p>
+
+    <div class="restaurant-detail">
+        {{#if error}}<div class="alert alert-error">{{error}}</div>{{/if}}
+
+        <form action="/reviews/create/{{restaurant.id}}" method="POST" enctype="multipart/form-data" id="create-review-form" novalidate>
+            <div class="form-group">
+                <label for="title">Review Title *</label>
+                <input type="text" id="title" name="title" class="form-control" placeholder="Sum up your experience" value="{{formData.title}}" required minlength="3" maxlength="200">
+                <p class="error-msg" id="title-error"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="rating">Rating *</label>
+                <select id="rating" name="rating" class="form-control" required>
+                    <option value="" {{#if (eq formData.rating "")}}selected{{/if}}>Select a rating</option>
+                    <option value="5" {{#if (eq formData.rating "5")}}selected{{/if}}>5 Stars - Excellent</option>
+                    <option value="4" {{#if (eq formData.rating "4")}}selected{{/if}}>4 Stars - Good</option>
+                    <option value="3" {{#if (eq formData.rating "3")}}selected{{/if}}>3 Stars - Average</option>
+                    <option value="2" {{#if (eq formData.rating "2")}}selected{{/if}}>2 Stars - Poor</option>
+                    <option value="1" {{#if (eq formData.rating "1")}}selected{{/if}}>1 Star - Terrible</option>
+                </select>
+                <p class="error-msg" id="rating-error"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="body">Your Review *</label>
+                <textarea id="body" name="body" class="form-control" placeholder="Share your experience with this restaurant..." required minlength="10" maxlength="5000" style="min-height:150px;">{{formData.body}}</textarea>
+                <p class="char-count" id="body-count">0 / 5000</p>
+                <p class="error-msg" id="body-error"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="media">Attach Media (Optional)</label>
+                <input type="file" id="media" name="media" class="form-control" accept="image/*,video/*,.mp4,.webm,.ogg,.mov" multiple>
+                <p class="error-msg" id="media-error"></p>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+                <a href="/restaurants/{{restaurant.id}}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const createForm = document.getElementById('create-review-form');
+const createBody = document.getElementById('body');
+const bodyCount = document.getElementById('body-count');
+
+function setCreateError(fieldId, message) {
+    document.getElementById(fieldId + '-error').textContent = message;
+}
+
+function updateBodyCount() {
+    bodyCount.textContent = createBody.value.length + ' / 5000';
+}
+
+function validateCreateReviewForm() {
+    const title = document.getElementById('title').value.trim();
+    const rating = document.getElementById('rating').value;
+    const body = createBody.value.trim();
+    const media = document.getElementById('media').files;
+    let valid = true;
+
+    setCreateError('title', '');
+    setCreateError('rating', '');
+    setCreateError('body', '');
+    setCreateError('media', '');
+
+    if (title.length < 3 || title.length > 200) {
+        setCreateError('title', 'Title must be between 3 and 200 characters.');
+        valid = false;
+    }
+
+    if (!rating) {
+        setCreateError('rating', 'Please select a rating.');
+        valid = false;
+    }
+
+    if (body.length < 10 || body.length > 5000) {
+        setCreateError('body', 'Review body must be between 10 and 5000 characters.');
+        valid = false;
+    }
+
+    for (const file of media) {
+        if (!(file.type.startsWith('image/') || file.type.startsWith('video/'))) {
+            setCreateError('media', 'Only image and video files are allowed.');
+            valid = false;
+            break;
+        }
+    }
+
+    return valid;
+}
+
+updateBodyCount();
+createBody.addEventListener('input', function () {
+    updateBodyCount();
+    validateCreateReviewForm();
+});
+
+['title', 'rating', 'media'].forEach(function (id) {
+    document.getElementById(id).addEventListener('input', validateCreateReviewForm);
+    document.getElementById(id).addEventListener('change', validateCreateReviewForm);
+});
+
+createForm.addEventListener('submit', function (event) {
+    if (!validateCreateReviewForm()) {
+        event.preventDefault();
+    }
+});
+</script>

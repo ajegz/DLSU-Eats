@@ -1,0 +1,39 @@
+<div class="hero">
+    <h1>Discover the Best Eats Around DLSU</h1>
+    <p>Find and share reviews of restaurants near De La Salle University</p>
+    <div class="btn-group">
+        <a href="/restaurants" class="btn btn-primary">Browse Restaurants</a>
+        <a href="/top-reviews" class="btn btn-secondary">Top Reviews</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2 class="text-center">Featured Restaurants</h2>
+    <div class="card-grid">
+        {{#each restaurants}}
+        <div class="card" onclick="window.location='/restaurants/{{id}}'">
+            <img src="/{{image}}" alt="{{name}}" class="card-image" onerror="this.src='https://via.placeholder.com/400x300?text={{name}}'">
+            <div class="card-content">
+                <h3>{{name}}</h3>
+                <div class="card-rating">
+                    <span class="stars">{{stars rating}}</span>
+                    <span>{{rating}}/5 ({{ratingCount}})</span>
+                </div>
+                <div class="card-tags">
+                    {{#each foodStyles}}<span class="tag">{{this}}</span>{{/each}}
+                </div>
+                <div class="card-info">
+                    <span class="price-range">{{priceRange}}</span> &bull;
+                    <span>{{location}}</span>
+                </div>
+                {{#if grabAvailable}}<a href="{{grabLink}}" class="delivery-badge grab" target="_blank" onclick="event.stopPropagation()">Grab</a>{{/if}}
+                {{#if foodPandaAvailable}}<a href="{{foodPandaLink}}" class="delivery-badge foodpanda" target="_blank" onclick="event.stopPropagation()">FoodPanda</a>{{/if}}
+                <span class="campus-badge {{campusClass insideCampus}}">{{campusBadge insideCampus}}</span>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+    <div class="text-center mt-2">
+        <a href="/restaurants" class="btn btn-outline">View All Restaurants</a>
+    </div>
+</div>

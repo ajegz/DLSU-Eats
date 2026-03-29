@@ -1,0 +1,209 @@
+<div class="container">
+    {{#if error}}
+    <div class="alert alert-error">{{error}}</div>
+    {{/if}}
+
+    <div class="profile-header">
+        <div class="profile-info">
+            <img src="{{avatarUrl profileUser.profilePicture}}"
+                 alt="Profile Picture"
+                 style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid var(--primary-green);">
+            <div class="profile-details">
+                <h2>{{profileUser.name}}</h2>
+                <p class="text-muted">{{profileUser.bio}}</p>
+                <p class="text-muted">Member since: {{profileUser.joinedDate}}</p>
+            </div>
+        </div>
+        {{#if isOwnProfile}}
+        <div>
+            <button class="btn btn-outline" onclick="document.getElementById('edit-form').classList.toggle('hidden')">Edit Profile</button>
+            <form action="/auth/logout" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-outline">Logout</button>
+            </form>
+            <form action="/profile/{{profileUser._id}}/delete" method="POST" style="display:inline;" onsubmit="return confirmDeleteAccount();">
+                <button type="submit" class="btn btn-outline" style="color:#dc2626; border-color:#dc2626;">Delete Account</button>
+            </form>
+        </div>
+        {{/if}}
+    </div>
+
+    <div class="stats-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1.5rem; margin:2rem 0;">
+        <div class="stat-card" style="background:var(--white); padding:1.5rem; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.1); text-align:center;">
+            <div style="font-size:2rem; font-weight:bold; color:var(--primary-green);">{{totalReviews}}</div>
+            <div style="color:var(--text-light); font-size:0.875rem;">Total Reviews</div>
+        </div>
+        <div class="stat-card" style="background:var(--white); padding:1.5rem; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.1); text-align:center;">
+            <div style="font-size:2rem; font-weight:bold; color:var(--gold);">{{avgRating}}</div>
+            <div style="color:var(--text-light); font-size:0.875rem;">Average Rating</div>
+        </div>
+        <div class="stat-card" style="background:var(--white); padding:1.5rem; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.1); text-align:center;">
+            <div style="font-size:2rem; font-weight:bold; color:var(--accent-green);">{{visitedCount}}</div>
+            <div style="color:var(--text-light); font-size:0.875rem;">Restaurants Visited</div>
+        </div>
+    </div>
+
+    {{#if isOwnProfile}}
+    <div class="restaurant-detail hidden" id="edit-form">
+        <h3>Edit Profile</h3>
+        <form action="/profile/{{profileUser._id}}/edit" method="POST" enctype="multipart/form-data" id="edit-profile-form" novalidate>
+            <div class="form-group">
+                <label for="edit-name">Full Name</label>
+                <input type="text" id="edit-name" name="name" class="form-control" value="{{profileUser.name}}" required minlength="2" maxlength="100">
+                <p class="error-msg" id="edit-name-error"></p>
+            </div>
+            <div class="form-group">
+                <label for="edit-bio">Bio</label>
+                <textarea id="edit-bio" name="bio" class="form-control" style="min-height:100px;" maxlength="500">{{profileUser.bio}}</textarea>
+                <p class="char-count" id="edit-bio-count">0 / 500</p>
+                <p class="error-msg" id="edit-bio-error"></p>
+            </div>
+            <div class="form-group">
+                <label for="edit-profile-picture">Profile Picture (Optional)</label>
+                <input type="file" id="edit-profile-picture" name="profilePicture" class="form-control" accept=".jpg,.jpeg,.png,.gif,.webp,image/*">
+                <p class="error-msg" id="edit-profile-picture-error"></p>
+            </div>
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="button" class="btn btn-outline" onclick="document.getElementById('edit-form').classList.add('hidden')">Cancel</button>
+            </div>
+        </form>
+    </div>
+    {{/if}}
+
+    <div class="dashboard-section">
+        <h2>Restaurants Visited</h2>
+        {{#if visitedRestaurants.length}}
+        <div class="card-grid">
+            {{#each visitedRestaurants}}
+            <div class="card" onclick="window.location='/restaurants/{{id}}'">
+                <img src="/{{image}}" alt="{{name}}" class="card-image" onerror="this.src='https://via.placeholder.com/400x300?text={{name}}'">
+                <div class="card-content">
+                    <h3>{{name}}</h3>
+                    <div class="card-rating">{{stars rating}} {{rating}}/5</div>
+                    <div class="card-info">
+                        <span class="price-range">{{priceRange}}</span> &bull; <span>{{location}}</span>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        {{else}}
+        <div class="empty-state">
+            <h3>No restaurants visited yet</h3>
+            <p>Start <a href="/restaurants">exploring restaurants</a> and writing reviews!</p>
+        </div>
+        {{/if}}
+    </div>
+
+    <div class="dashboard-section">
+        <h2>Recent Reviews</h2>
+        {{#if reviews.length}}
+        {{#each reviews}}
+        <div class="review-card">
+            <div class="review-header">
+                <div>
+                    <h3>{{title}} {{#if edited}}<span class="badge badge-gold">Edited</span>{{/if}}</h3>
+                    <div class="card-rating">{{stars rating}} {{rating}}/5</div>
+                    <p class="text-muted">Review for <a href="/restaurants/{{restaurant.id}}">{{restaurant.name}}</a></p>
+                </div>
+                <div class="review-date">{{date}}</div>
+            </div>
+            <div class="review-body">{{truncate body 150}}</div>
+            <div style="display:flex; gap:1rem; margin-top:1rem; align-items:center;">
+                <a href="/reviews/{{_id}}" class="btn btn-outline">View</a>
+                {{#if ../isOwnProfile}}
+                <a href="/reviews/{{_id}}/edit" class="btn btn-outline">Edit</a>
+                <button
+                    onclick="confirmDelete('{{_id}}', '{{title}}')"
+                    class="btn btn-outline"
+                    style="color:#dc2626; border-color:#dc2626;">
+                    Delete
+                </button>
+                <form id="delete-{{_id}}" action="/reviews/{{_id}}/delete" method="POST" style="display:none;"></form>
+                {{/if}}
+            </div>
+        </div>
+        {{/each}}
+        {{else}}
+        <div class="empty-state">
+            <h3>No reviews yet</h3>
+            <p>Start reviewing restaurants to see them here!</p>
+        </div>
+        {{/if}}
+    </div>
+</div>
+
+<script>
+function confirmDelete(id, title) {
+  if (confirm('Delete your review "' + title + '"? This cannot be undone.')) {
+    document.getElementById('delete-' + id).submit();
+  }
+}
+
+function confirmDeleteAccount() {
+    return confirm('Delete your account permanently? This will also delete all your reviews and cannot be undone.');
+}
+
+const editProfileForm = document.getElementById('edit-profile-form');
+const editBio = document.getElementById('edit-bio');
+const editBioCount = document.getElementById('edit-bio-count');
+
+if (editProfileForm) {
+    function setProfileFieldError(fieldId, message) {
+        document.getElementById(fieldId + '-error').textContent = message;
+    }
+
+    function updateBioCount() {
+        editBioCount.textContent = editBio.value.length + ' / 500';
+    }
+
+    function validateProfileForm() {
+        let valid = true;
+        const name = document.getElementById('edit-name').value.trim();
+        const bio = editBio.value;
+        const fileInput = document.getElementById('edit-profile-picture');
+
+        setProfileFieldError('edit-name', '');
+        setProfileFieldError('edit-bio', '');
+        setProfileFieldError('edit-profile-picture', '');
+
+        if (name.length < 2 || name.length > 100) {
+            setProfileFieldError('edit-name', 'Name must be between 2 and 100 characters.');
+            valid = false;
+        }
+
+        if (bio.length > 500) {
+            setProfileFieldError('edit-bio', 'Bio cannot exceed 500 characters.');
+            valid = false;
+        }
+
+        if (fileInput.files.length > 0) {
+            const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowed.includes(fileInput.files[0].type)) {
+                setProfileFieldError('edit-profile-picture', 'Profile picture must be a JPG, PNG, GIF, or WEBP image.');
+                valid = false;
+            }
+        }
+
+        return valid;
+    }
+
+    updateBioCount();
+
+    editBio.addEventListener('input', function () {
+        updateBioCount();
+        validateProfileForm();
+    });
+
+    ['edit-name', 'edit-profile-picture'].forEach(function (id) {
+        document.getElementById(id).addEventListener('input', validateProfileForm);
+        document.getElementById(id).addEventListener('change', validateProfileForm);
+    });
+
+    editProfileForm.addEventListener('submit', function (event) {
+        if (!validateProfileForm()) {
+            event.preventDefault();
+        }
+    });
+}
+</script>

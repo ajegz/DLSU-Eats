@@ -1,0 +1,115 @@
+<div class="container">
+    <div class="restaurant-detail">
+        <img src="/{{restaurant.image}}" alt="{{restaurant.name}}" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px; margin-bottom: 1.5rem;" onerror="this.src='https://via.placeholder.com/800x400?text=No+Image'">
+
+        <div class="restaurant-header">
+            <span class="campus-badge {{campusClass restaurant.insideCampus}}">{{campusBadge restaurant.insideCampus}}</span>
+            <h1>{{restaurant.name}}</h1>
+            <div class="card-rating" style="font-size: 1.25rem; margin: 1rem 0;">
+                <span class="stars">{{stars restaurant.rating}}</span>
+                <span>{{restaurant.rating}}/5 ({{restaurant.ratingCount}} reviews)</span>
+            </div>
+            <div class="card-tags">
+                {{#each restaurant.foodStyles}}<span class="tag">{{this}}</span>{{/each}}
+            </div>
+            {{#if restaurant.grabAvailable}}
+            <div class="delivery-badges" style="margin-top:1rem;">
+                <a href="{{restaurant.grabLink}}" class="delivery-badge grab" target="_blank">🛵 Order on Grab</a>
+            </div>
+            {{/if}}
+            {{#if restaurant.foodPandaAvailable}}
+            <div class="delivery-badges" style="margin-top:0.5rem;">
+                <a href="{{restaurant.foodPandaLink}}" class="delivery-badge foodpanda" target="_blank">🍽️ Order on FoodPanda</a>
+            </div>
+            {{/if}}
+        </div>
+
+        <p>{{restaurant.description}}</p>
+
+        <div class="restaurant-info-grid">
+            <div class="info-item">
+                <h4>Price Range</h4>
+                <p class="price-range">{{restaurant.priceRange}}</p>
+            </div>
+            <div class="info-item">
+                <h4>Location</h4>
+                <p>{{restaurant.location}}</p>
+            </div>
+            {{#unless restaurant.insideCampus}}
+            {{#if restaurant.walkingTime}}
+            <div class="info-item">
+                <h4>Walking Distance</h4>
+                <p>{{restaurant.walkingTime}} ({{restaurant.distance}})</p>
+            </div>
+            {{/if}}
+            {{/unless}}
+            <div class="info-item">
+                <h4>Hours</h4>
+                <p>{{restaurant.hours}}</p>
+            </div>
+            <div class="info-item">
+                <h4>Phone</h4>
+                <p>{{restaurant.phone}}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="reviews-section">
+        <div class="dashboard-header">
+            <h2>Reviews ({{reviewCount}})</h2>
+            {{#if user}}
+                {{#unless user.isOwner}}
+                <a href="/reviews/create/{{restaurant.id}}" class="btn btn-primary">Write a Review</a>
+                {{/unless}}
+            {{else}}
+            <a href="/auth/login" class="btn btn-outline">Login to Review</a>
+            {{/if}}
+        </div>
+
+        {{#if reviews.length}}
+        {{#each reviews}}
+        <div class="review-card">
+            <div class="review-header">
+                <div>
+                    <h3>{{title}} {{#if edited}}<span class="badge badge-gold">Edited</span>{{/if}}</h3>
+                    <div class="card-rating">{{stars rating}} {{rating}}/5</div>
+                </div>
+                <div class="review-date">{{date}}</div>
+            </div>
+            <div class="review-body">{{truncate body 200}}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem;">
+                <div class="review-author">By {{#if user.name}}{{user.name}}{{else}}Anonymous reviewer{{/if}}</div>
+                <div style="display:flex; gap:1rem; font-size:0.875rem; color:var(--text-light);">
+                    <span>👍 {{helpful}} helpful</span>
+                    <span>👎 {{unhelpful}}</span>
+                </div>
+            </div>
+            {{#if ownerResponse}}
+            <div class="owner-response">
+                <div class="owner-response-header">Owner Response:</div>
+                <p style="margin:0;">{{ownerResponse.text}}</p>
+                <p class="text-muted" style="font-size:0.75rem; margin-top:0.5rem;">{{ownerResponse.date}}</p>
+            </div>
+            {{/if}}
+            <div style="margin-top:1rem;">
+                <a href="/reviews/{{_id}}" class="btn btn-outline">Read Full Review</a>
+            </div>
+        </div>
+        {{/each}}
+
+        {{#if (gt totalPages 1)}}
+        <div style="display:flex; justify-content:center; align-items:center; gap:1rem; margin-top:2rem;">
+            {{#if prevPage}}<a href="/restaurants/{{restaurant.id}}?page={{prevPage}}" class="btn btn-outline">← Previous</a>{{/if}}
+            <span class="text-muted">Page {{currentPage}} of {{totalPages}}</span>
+            {{#if nextPage}}<a href="/restaurants/{{restaurant.id}}?page={{nextPage}}" class="btn btn-outline">Next →</a>{{/if}}
+        </div>
+        {{/if}}
+
+        {{else}}
+        <div class="empty-state">
+            <h3>No reviews yet</h3>
+            <p>Be the first to review this restaurant!</p>
+        </div>
+        {{/if}}
+    </div>
+</div>

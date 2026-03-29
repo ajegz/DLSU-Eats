@@ -1,0 +1,136 @@
+<div class="container-narrow">
+    <h1>Edit Your Review</h1>
+    <p class="text-muted">Editing review for <strong>{{restaurant.name}}</strong></p>
+
+    <div class="restaurant-detail">
+        {{#if error}}<div class="alert alert-error">{{error}}</div>{{/if}}
+
+        <form action="/reviews/{{review._id}}/edit" method="POST" enctype="multipart/form-data" id="edit-review-form" novalidate>
+            <div class="form-group">
+                <label for="title">Review Title *</label>
+                <input type="text" id="title" name="title" class="form-control" value="{{review.title}}" required minlength="3" maxlength="200">
+                <p class="error-msg" id="title-error"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="rating">Rating *</label>
+                <select id="rating" name="rating" class="form-control" required>
+                    <option value="">Select a rating</option>
+                    <option value="5" {{#if (eq review.rating "5")}}selected{{/if}}>5 Stars - Excellent</option>
+                    <option value="4" {{#if (eq review.rating "4")}}selected{{/if}}>4 Stars - Good</option>
+                    <option value="3" {{#if (eq review.rating "3")}}selected{{/if}}>3 Stars - Average</option>
+                    <option value="2" {{#if (eq review.rating "2")}}selected{{/if}}>2 Stars - Poor</option>
+                    <option value="1" {{#if (eq review.rating "1")}}selected{{/if}}>1 Star - Terrible</option>
+                </select>
+                <p class="error-msg" id="rating-error"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="body">Your Review *</label>
+                <textarea id="body" name="body" class="form-control" required minlength="10" maxlength="5000" style="min-height:150px;">{{review.body}}</textarea>
+                <p class="char-count" id="body-count">0 / 5000</p>
+                <p class="error-msg" id="body-error"></p>
+            </div>
+
+            <div class="form-group">
+                <label>Current Media</label>
+                {{#if review.mediaItems.length}}
+                <div class="media-grid">
+                    {{#each review.mediaItems}}
+                    <div class="media-preview-card">
+                        {{#if isVideo}}
+                        <video controls class="review-media-item" src="{{path}}"></video>
+                        {{else}}
+                        <img src="{{path}}" alt="Review media" class="review-media-item">
+                        {{/if}}
+                    </div>
+                    {{/each}}
+                </div>
+                {{else}}
+                <p class="text-muted">No media attached yet.</p>
+                {{/if}}
+            </div>
+
+            <div class="form-group">
+                <label for="media">Replace Media (Optional)</label>
+                <input type="file" id="media" name="media" class="form-control" accept="image/*,video/*,.mp4,.webm,.ogg,.mov" multiple>
+                <p class="text-muted" style="margin-top:0.5rem;">Uploading new files replaces existing media attachments.</p>
+                <p class="error-msg" id="media-error"></p>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="/reviews/{{review._id}}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const editForm = document.getElementById('edit-review-form');
+const editBody = document.getElementById('body');
+const editBodyCount = document.getElementById('body-count');
+
+function setEditError(fieldId, message) {
+    document.getElementById(fieldId + '-error').textContent = message;
+}
+
+function updateEditBodyCount() {
+    editBodyCount.textContent = editBody.value.length + ' / 5000';
+}
+
+function validateEditReviewForm() {
+    const title = document.getElementById('title').value.trim();
+    const rating = document.getElementById('rating').value;
+    const body = editBody.value.trim();
+    const media = document.getElementById('media').files;
+    let valid = true;
+
+    setEditError('title', '');
+    setEditError('rating', '');
+    setEditError('body', '');
+    setEditError('media', '');
+
+    if (title.length < 3 || title.length > 200) {
+        setEditError('title', 'Title must be between 3 and 200 characters.');
+        valid = false;
+    }
+
+    if (!rating) {
+        setEditError('rating', 'Please select a rating.');
+        valid = false;
+    }
+
+    if (body.length < 10 || body.length > 5000) {
+        setEditError('body', 'Review body must be between 10 and 5000 characters.');
+        valid = false;
+    }
+
+    for (const file of media) {
+        if (!(file.type.startsWith('image/') || file.type.startsWith('video/'))) {
+            setEditError('media', 'Only image and video files are allowed.');
+            valid = false;
+            break;
+        }
+    }
+
+    return valid;
+}
+
+updateEditBodyCount();
+editBody.addEventListener('input', function () {
+    updateEditBodyCount();
+    validateEditReviewForm();
+});
+
+['title', 'rating', 'media'].forEach(function (id) {
+    document.getElementById(id).addEventListener('input', validateEditReviewForm);
+    document.getElementById(id).addEventListener('change', validateEditReviewForm);
+});
+
+editForm.addEventListener('submit', function (event) {
+    if (!validateEditReviewForm()) {
+        event.preventDefault();
+    }
+});
+</script>

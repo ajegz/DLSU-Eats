@@ -1,0 +1,28 @@
+<div id="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-brand">
+            <img src="/assets/images/logos/logo.png" alt="DLSU Eats Logo" class="nav-logo">
+            DLSU Eats
+        </a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/restaurants">Restaurants</a></li>
+            <li><a href="/top-reviews">Top Reviews</a></li>
+            <li><a href="/search">Search</a></li>
+            {{#if user}}
+                {{#if user.isOwner}}
+                    <li><a href="/owner/dashboard">Dashboard</a></li>
+                {{else}}
+                    <li><a href="/profile/{{user._id}}">Profile</a></li>
+                {{/if}}
+                <li>
+                    <form action="/auth/logout" method="POST" style="display:inline;">
+                        <button type="submit" class="btn-link">Logout</button>
+                    </form>
+                </li>
+            {{else}}
+                <li><a href="/auth/login">Login</a></li>
+            {{/if}}
+        </ul>
+    </div>
+</div>
