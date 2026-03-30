@@ -2,10 +2,20 @@
 
 A restaurant review web application for the DLSU community. Built with Express.js, MongoDB, and Handlebars.
 
+## Security Notice
+
+Do not commit real secrets to GitHub. Always keep credentials in `.env` (local) or platform environment variables (Render/Railway/etc).
+
+If a MongoDB URI or API key was exposed, do this immediately:
+1. Rotate the leaked credential in MongoDB Atlas.
+2. Replace environment variables in production and local environments.
+3. Remove secrets from tracked files (especially `.env.example`, docs, and commit history if needed).
+4. Close the GitHub secret scanning alert only after revocation/rotation.
+
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) v18+
-- [MongoDB](https://www.mongodb.com/) running locally on port 27017
+- A MongoDB connection string (local MongoDB or MongoDB Atlas)
 
 ## Setup
 
@@ -22,6 +32,16 @@ cp .env.example .env
 ```
 
 Edit `.env` if you need to change the MongoDB URI, session secret, or port.
+
+Safe `.env.example` format:
+
+```env
+MONGO_URI=mongodb+srv://<db_user>:<db_password>@<cluster-url>/<db_name>?retryWrites=true&w=majority
+SESSION_SECRET=replace-with-a-long-random-secret
+PORT=3000
+```
+
+Never place actual passwords/tokens in `.env.example`.
 
 ### 3. Seed the database
 
@@ -56,6 +76,11 @@ The app will be available at **http://localhost:3000**
 Notes:
 - `seed.js` already uses environment-based MongoDB connection, so it works with Atlas when `MONGO_URI` is set.
 - Files in `public/assets/images/uploads/` may not persist on free hosting tiers. Use cloud storage (for example, Cloudinary) for production-grade media persistence.
+
+Security notes:
+- Keep `.env` out of source control (`.gitignore` already handles this).
+- Use different credentials for local, staging, and production.
+- Rotate credentials whenever GitHub reports a secret-scanning alert.
 
 ---
 
