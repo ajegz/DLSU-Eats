@@ -1292,7 +1292,7 @@ footer a:hover {
 }
 
 /* ===== Design Refresh ===== */
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root {
   --brand-deep: #09382c;
@@ -1315,7 +1315,7 @@ body {
 }
 
 h1, h2, h3 {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
   letter-spacing: 0.01em;
 }
 
@@ -1418,11 +1418,15 @@ h1, h2, h3 {
 }
 
 .dashboard-stat-value {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
   color: var(--brand-primary);
   font-size: 1.9rem;
   font-weight: 700;
   line-height: 1.1;
+}
+
+.confirm-modal.hidden {
+  display: none;
 }
 
 .dashboard-stat-label {
