@@ -29,16 +29,20 @@
     {{#if restaurants.length}}
     <div class="dashboard-section">
         <h2>Your Restaurants</h2>
-        <div class="card-grid">
+        <div class="owner-restaurant-list">
             {{#each restaurants}}
-            <div class="card" onclick="window.location='/restaurants/{{id}}'">
+            <article class="card owner-restaurant-card" onclick="window.location='/restaurants/{{id}}'">
                 <img src="/{{image}}" alt="{{name}}" class="card-image" onerror="this.src='https://via.placeholder.com/400x300?text={{name}}'">
                 <div class="card-content">
                     <h3>{{name}}</h3>
                     <div class="card-rating">{{{stars rating}}} {{rating}}/5 ({{ratingCount}} reviews)</div>
                     <div class="card-info"><span>{{location}}</span></div>
+                    <div class="owner-restaurant-meta">
+                        <span class="tag">{{priceRange}}</span>
+                        <span class="tag">{{campusBadge insideCampus}}</span>
+                    </div>
                 </div>
-            </div>
+            </article>
             {{/each}}
         </div>
     </div>
