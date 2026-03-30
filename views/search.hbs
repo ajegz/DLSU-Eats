@@ -49,10 +49,14 @@
             {{#each reviewResults}}
             <div class="review-card" onclick="window.location='/reviews/{{_id}}'">
                 <div class="review-header">
-                    <img src="{{avatarUrl reviewer.profilePicture}}" alt="{{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}" class="reviewer-avatar">
+                    {{#if restaurant}}
+                    <img src="{{assetPath restaurant.image}}" alt="{{restaurant.name}}" class="top-review-restaurant-icon" onerror="this.src='https://via.placeholder.com/96x96?text=Food'">
+                    {{else}}
+                    <img src="https://via.placeholder.com/96x96?text=Food" alt="Restaurant unavailable" class="top-review-restaurant-icon">
+                    {{/if}}
                     <div>
                         <h3 class="review-title">{{title}}</h3>
-                        <div class="reviewer-name">{{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}</div>
+                        <div class="reviewer-name">Reviewed by {{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}</div>
                         <div class="card-rating">{{{stars rating}}} <strong>{{rating}}/5</strong></div>
                         <div class="review-restaurant">
                             {{#if restaurant}}
@@ -64,7 +68,11 @@
                     </div>
                 </div>
                 <p class="review-body">{{truncate body 200}}</p>
-                <div class="review-footer"><span>{{date}}</span></div>
+                <div class="review-footer">
+                    <span>{{date}}</span>
+                    <span class="icon-text"><span aria-hidden="true">👍</span><span>{{helpful}} helpful</span></span>
+                    {{#if ownerResponse}}<span class="badge badge-green">Owner responded</span>{{/if}}
+                </div>
             </div>
             {{/each}}
         </div>
