@@ -1,38 +1,51 @@
-<div class="container-narrow">
-    <h1 class="text-center">Login to DLSU Eats</h1>
+<div class="container">
+    <div class="auth-layout">
+        <section class="auth-panel auth-panel-highlight">
+            <p class="auth-kicker">DLSU Eats</p>
+            <h1>Welcome back</h1>
+            <p class="text-muted">Sign in to continue exploring trusted reviews and share your latest food finds near DLSU.</p>
+            <ul class="auth-benefits">
+                <li>Track restaurants you visited</li>
+                <li>Write and manage your reviews</li>
+                <li>Get updates from restaurant owners</li>
+            </ul>
+        </section>
 
-    <div class="restaurant-detail">
-        {{#if error}}
-        <div class="alert alert-error">{{error}}</div>
-        {{/if}}
+        <section class="auth-panel">
+            <h2 class="text-center">Login to DLSU Eats</h2>
 
-        <form action="/auth/login" method="POST" id="login-form" novalidate>
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" class="form-control" placeholder="your.email@dlsu.edu.ph" required>
-                <p class="error-msg" id="email-error"></p>
-            </div>
+            {{#if error}}
+            <div class="alert alert-error">{{error}}</div>
+            {{/if}}
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required minlength="6">
-                <p class="error-msg" id="password-error"></p>
-            </div>
-
-            <div class="form-group">
-                <div class="form-checkbox">
-                    <input type="checkbox" id="rememberMe" name="rememberMe" value="1">
-                    <label for="rememberMe">Remember me</label>
+            <form action="/auth/login" method="POST" id="login-form" novalidate>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="your.email@dlsu.edu.ph" required>
+                    <p class="error-msg" id="email-error"></p>
                 </div>
-            </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
-        </form>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required minlength="6">
+                    <p class="error-msg" id="password-error"></p>
+                </div>
 
-        <hr style="margin: 2rem 0;">
-        <p class="text-center">
-            Don't have an account? <a href="/auth/register">Register here</a>
-        </p>
+                <div class="form-group">
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="rememberMe" name="rememberMe" value="1">
+                        <label for="rememberMe">Remember me</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary auth-submit">Login</button>
+            </form>
+
+            <hr class="auth-divider">
+            <p class="text-center">
+                Don't have an account? <a href="/auth/register">Register here</a>
+            </p>
+        </section>
     </div>
 </div>
 

@@ -3,7 +3,7 @@
     <div class="alert alert-error">{{error}}</div>
     {{/if}}
 
-    <div class="profile-header">
+    <div class="profile-header dashboard-hero">
         <div class="profile-info">
             <img src="{{avatarUrl profileUser.profilePicture}}"
                  alt="Profile Picture"
@@ -27,18 +27,18 @@
         {{/if}}
     </div>
 
-    <div class="stats-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1.5rem; margin:2rem 0;">
-        <div class="stat-card" style="background:var(--white); padding:1.5rem; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.1); text-align:center;">
-            <div style="font-size:2rem; font-weight:bold; color:var(--primary-green);">{{totalReviews}}</div>
-            <div style="color:var(--text-light); font-size:0.875rem;">Total Reviews</div>
+    <div class="dashboard-stats-grid">
+        <div class="dashboard-stat-card">
+            <div class="dashboard-stat-value">{{totalReviews}}</div>
+            <div class="dashboard-stat-label">Total Reviews</div>
         </div>
-        <div class="stat-card" style="background:var(--white); padding:1.5rem; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.1); text-align:center;">
-            <div style="font-size:2rem; font-weight:bold; color:var(--gold);">{{avgRating}}</div>
-            <div style="color:var(--text-light); font-size:0.875rem;">Average Rating</div>
+        <div class="dashboard-stat-card">
+            <div class="dashboard-stat-value">{{avgRating}}</div>
+            <div class="dashboard-stat-label">Average Rating</div>
         </div>
-        <div class="stat-card" style="background:var(--white); padding:1.5rem; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.1); text-align:center;">
-            <div style="font-size:2rem; font-weight:bold; color:var(--accent-green);">{{visitedCount}}</div>
-            <div style="color:var(--text-light); font-size:0.875rem;">Restaurants Visited</div>
+        <div class="dashboard-stat-card">
+            <div class="dashboard-stat-value">{{visitedCount}}</div>
+            <div class="dashboard-stat-label">Restaurants Visited</div>
         </div>
     </div>
 
@@ -101,23 +101,28 @@
         {{#each reviews}}
         <div class="review-card">
             <div class="review-header">
-                <div>
-                    <h3>{{title}} {{#if edited}}<span class="badge badge-gold">Edited</span>{{/if}}</h3>
+                <img src="{{avatarUrl ../profileUser.profilePicture}}" alt="{{../profileUser.name}}" class="reviewer-avatar" onerror="this.src='{{avatarUrl null}}'">
+                <div class="review-header-main">
+                    <div class="review-header-top">
+                        <h3>{{title}} {{#if edited}}<span class="badge badge-gold">Edited</span>{{/if}}</h3>
+                        <div class="review-date">{{date}}</div>
+                    </div>
                     <div class="review-author">By {{../profileUser.name}}</div>
                     <div class="card-rating">{{{stars rating}}} {{rating}}/5</div>
-                    <p class="text-muted">Review for <a href="/restaurants/{{restaurant.id}}">{{restaurant.name}}</a></p>
+                    <a href="/restaurants/{{restaurant.id}}" class="review-restaurant-chip">
+                        <img src="/{{restaurant.image}}" alt="{{restaurant.name}}" class="review-restaurant-thumb" onerror="this.src='https://via.placeholder.com/96x96?text=Food'">
+                        <span>{{restaurant.name}}</span>
+                    </a>
                 </div>
-                <div class="review-date">{{date}}</div>
             </div>
             <div class="review-body">{{truncate body 150}}</div>
-            <div style="display:flex; gap:1rem; margin-top:1rem; align-items:center;">
+            <div class="review-card-actions">
                 <a href="/reviews/{{_id}}" class="btn btn-outline">View</a>
                 {{#if ../isOwnProfile}}
                 <a href="/reviews/{{_id}}/edit" class="btn btn-outline">Edit</a>
                 <button
                     onclick="confirmDelete('{{_id}}', '{{title}}')"
-                    class="btn btn-outline"
-                    style="color:#dc2626; border-color:#dc2626;">
+                    class="btn btn-outline review-danger">
                     Delete
                 </button>
                 <form id="delete-{{_id}}" action="/reviews/{{_id}}/delete" method="POST" style="display:none;"></form>

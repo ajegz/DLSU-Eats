@@ -1,10 +1,30 @@
 <div class="container">
-    <h1>Owner Dashboard</h1>
-    <p class="text-muted">Welcome, {{user.name}} — manage your restaurants and respond to reviews.</p>
+    <div class="dashboard-hero owner-hero">
+        <div>
+            <h1>Owner Dashboard</h1>
+            <p class="text-muted">Welcome, {{user.name}}. Track your restaurant performance and respond to feedback quickly.</p>
+        </div>
+        <div class="dashboard-badge-pill">{{reviewCount}} review{{#if (gt reviewCount 1)}}s{{/if}} to manage</div>
+    </div>
 
     {{#if error}}
     <div class="alert alert-error">{{error}}</div>
     {{/if}}
+
+    <div class="dashboard-stats-grid">
+        <div class="dashboard-stat-card">
+            <div class="dashboard-stat-value">{{restaurants.length}}</div>
+            <div class="dashboard-stat-label">Managed Restaurants</div>
+        </div>
+        <div class="dashboard-stat-card">
+            <div class="dashboard-stat-value">{{reviewCount}}</div>
+            <div class="dashboard-stat-label">Total Reviews</div>
+        </div>
+        <div class="dashboard-stat-card">
+            <div class="dashboard-stat-value">Owner</div>
+            <div class="dashboard-stat-label">{{user.name}}</div>
+        </div>
+    </div>
 
     {{#if restaurants.length}}
     <div class="dashboard-section">
@@ -27,45 +47,43 @@
     <div class="dashboard-section">
         <h2>Customer Reviews</h2>
         {{#if reviews.length}}
-        <table>
-            <caption>Manage Customer Reviews</caption>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Restaurant</th>
-                    <th>Customer</th>
-                    <th>Rating</th>
-                    <th>Review Title</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each reviews}}
-                <tr>
-                    <td>{{date}}</td>
-                    <td>{{restaurant.name}}</td>
-                    <td>{{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}</td>
-                    <td>{{{stars rating}}} {{rating}}/5</td>
-                    <td><a href="/reviews/{{_id}}">{{title}}</a></td>
-                    <td>
+        <div class="owner-review-list">
+            {{#each reviews}}
+            <article class="review-card owner-review-card">
+                <div class="review-header">
+                    <img src="{{avatarUrl reviewer.profilePicture}}" alt="{{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}" class="reviewer-avatar" onerror="this.src='{{avatarUrl null}}'">
+                    <div class="review-header-main">
+                        <div class="review-header-top">
+                            <h3><a href="/reviews/{{_id}}">{{title}}</a></h3>
+                            <span class="review-date">{{date}}</span>
+                        </div>
+                        <div class="review-author">By {{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}</div>
+                        <div class="card-rating">{{{stars rating}}} {{rating}}/5</div>
+                        <a href="/restaurants/{{restaurant.id}}" class="review-restaurant-chip">
+                            <img src="{{assetPath restaurant.image}}" alt="{{restaurant.name}}" class="review-restaurant-thumb" onerror="this.src='https://via.placeholder.com/96x96?text=Food'">
+                            <span>{{restaurant.name}}</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="owner-review-footer">
+                    <div>
                         {{#if ownerResponse}}
                         <span class="badge badge-green">Responded</span>
                         {{else}}
-                        <span class="badge badge-gold">Pending</span>
+                        <span class="badge badge-gold">Pending Response</span>
                         {{/if}}
-                    </td>
-                    <td>
+                    </div>
+                    <div>
                         {{#if ownerResponse}}
                         <button class="btn btn-outline" disabled>Responded</button>
                         {{else}}
                         <button class="btn btn-primary" onclick="showForm('{{_id}}', '{{title}}', '{{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}', '{{date}}')">Respond</button>
                         {{/if}}
-                    </td>
-                </tr>
-                {{/each}}
-            </tbody>
-        </table>
+                    </div>
+                </div>
+            </article>
+            {{/each}}
+        </div>
         {{else}}
         <div class="empty-state">
             <h3>No reviews yet</h3>
@@ -94,7 +112,7 @@
 function showForm(id, title, reviewer, date) {
   document.getElementById('response-form-container').classList.remove('hidden');
   document.getElementById('review-context').innerHTML =
-    `<div class="review-card" style="padding:1rem;"><strong>${title}</strong><br>By ${reviewer} on ${date}</div>`;
+        `<div class="review-card owner-context-card"><strong>${title}</strong><br>By ${reviewer} on ${date}</div>`;
   document.getElementById('response-form').action = '/owner/reviews/' + id + '/reply';
   document.getElementById('response-form-container').scrollIntoView({ behavior: 'smooth' });
 }

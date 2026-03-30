@@ -49,18 +49,20 @@
             {{#each reviewResults}}
             <div class="review-card" onclick="window.location='/reviews/{{_id}}'">
                 <div class="review-header">
-                    {{#if restaurant}}
-                    <img src="{{assetPath restaurant.image}}" alt="{{restaurant.name}}" class="top-review-restaurant-icon" onerror="this.src='https://via.placeholder.com/96x96?text=Food'">
-                    {{else}}
-                    <img src="https://via.placeholder.com/96x96?text=Food" alt="Restaurant unavailable" class="top-review-restaurant-icon">
-                    {{/if}}
-                    <div>
-                        <h3 class="review-title">{{title}}</h3>
+                    <img src="{{avatarUrl reviewer.profilePicture}}" alt="{{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}" class="reviewer-avatar" onerror="this.src='{{avatarUrl null}}'">
+                    <div class="review-header-main">
+                        <div class="review-header-top">
+                            <h3 class="review-title">{{title}}</h3>
+                            <span class="review-date">{{date}}</span>
+                        </div>
                         <div class="reviewer-name">Reviewed by {{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}</div>
                         <div class="card-rating">{{{stars rating}}} <strong>{{rating}}/5</strong></div>
                         <div class="review-restaurant">
                             {{#if restaurant}}
-                            <a href="/restaurants/{{restaurant.id}}" onclick="event.stopPropagation()">{{restaurant.name}}</a>
+                            <a href="/restaurants/{{restaurant.id}}" onclick="event.stopPropagation()" class="review-restaurant-chip">
+                                <img src="{{assetPath restaurant.image}}" alt="{{restaurant.name}}" class="review-restaurant-thumb" onerror="this.src='https://via.placeholder.com/96x96?text=Food'">
+                                <span>{{restaurant.name}}</span>
+                            </a>
                             {{else}}
                             <span class="text-muted">Restaurant unavailable</span>
                             {{/if}}
