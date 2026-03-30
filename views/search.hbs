@@ -6,6 +6,7 @@
             <input type="text" name="q" class="form-control" placeholder="Search restaurants, cuisines, reviews..." value="{{query}}" autofocus>
             <button type="submit" class="btn btn-primary">Search</button>
         </div>
+        <ul id="search-suggestions" class="search-suggestions hidden" aria-label="Search suggestions"></ul>
         <div class="filter-tags" style="margin-top:0.75rem;">
             <button type="submit" name="type" value="all" class="filter-tag {{#if (eq type 'all')}}active{{/if}}">All</button>
             <button type="submit" name="type" value="restaurants" class="filter-tag {{#if (eq type 'restaurants')}}active{{/if}}">Restaurants</button>
@@ -21,13 +22,13 @@
     {{#if restaurantResults.length}}
     <section class="result-section">
         <h2>Restaurants</h2>
-        <div class="card-grid">
+        <div class="search-restaurant-list">
             {{#each restaurantResults}}
-            <div class="card" onclick="window.location='/restaurants/{{id}}'">
+            <div class="card search-result-card" onclick="window.location='/restaurants/{{id}}'">
                 <img src="/{{image}}" alt="{{name}}" class="card-image" onerror="this.src='https://via.placeholder.com/400x300?text={{name}}'">
                 <div class="card-content">
                     <h3>{{name}}</h3>
-                    <div class="card-rating">{{stars rating}} {{rating}}/5</div>
+                    <div class="card-rating">{{{stars rating}}} {{rating}}/5</div>
                     <div class="card-tags">
                         {{campusBadge insideCampus}}
                         <span class="badge badge-gold">{{priceRange}}</span>
@@ -50,7 +51,9 @@
                 <div class="review-header">
                     <img src="{{avatarUrl reviewer.profilePicture}}" alt="{{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}" class="reviewer-avatar">
                     <div>
+                        <h3 class="review-title">{{title}}</h3>
                         <div class="reviewer-name">{{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}</div>
+                        <div class="card-rating">{{{stars rating}}} <strong>{{rating}}/5</strong></div>
                         <div class="review-restaurant">
                             {{#if restaurant}}
                             <a href="/restaurants/{{restaurant.id}}" onclick="event.stopPropagation()">{{restaurant.name}}</a>
@@ -59,9 +62,7 @@
                             {{/if}}
                         </div>
                     </div>
-                    <div style="margin-left:auto;">{{stars rating}} <strong>{{rating}}/5</strong></div>
                 </div>
-                <h3 class="review-title">{{title}}</h3>
                 <p class="review-body">{{truncate body 200}}</p>
                 <div class="review-footer"><span>{{date}}</span></div>
             </div>

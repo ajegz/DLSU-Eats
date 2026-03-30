@@ -7,15 +7,15 @@
         <div class="review-header">
             <div>
                 <h1>{{review.title}} {{#if review.edited}}<span class="badge badge-gold">Edited</span>{{/if}}</h1>
+                <div class="review-author" style="margin-bottom:0.35rem;">By {{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}</div>
                 <div class="card-rating" style="font-size:1.25rem; margin:0.5rem 0;">
-                    {{stars review.rating}} {{review.rating}}/5
+                    {{{stars review.rating}}} {{review.rating}}/5
                 </div>
             </div>
             <div class="review-date">{{review.date}}</div>
         </div>
 
-        <div class="review-author" style="margin:1rem 0;">
-            By {{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}
+        <div class="review-author" style="margin:0.25rem 0 1rem;">
             {{#if isAuthor}}
             &nbsp;|&nbsp;
             <a href="/reviews/{{review._id}}/edit" class="btn btn-outline" style="padding:0.25rem 0.75rem; font-size:0.875rem;">Edit Review</a>
@@ -50,8 +50,8 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
             <h3>Was this review helpful?</h3>
             <div style="display:flex; gap:1rem; font-size:1rem;">
-                <span id="helpful-count">👍 {{review.helpful}}</span>
-                <span id="unhelpful-count">👎 {{review.unhelpful}}</span>
+                <span id="helpful-count" class="icon-text"><span aria-hidden="true">👍</span><span>{{review.helpful}}</span></span>
+                <span id="unhelpful-count" class="icon-text"><span aria-hidden="true">👎</span><span>{{review.unhelpful}}</span></span>
             </div>
         </div>
 
@@ -60,8 +60,8 @@
         <p class="text-muted" id="vote-status">You have already voted on this review.</p>
         {{else}}
         <div class="review-actions" id="vote-buttons">
-            <button class="review-action-btn" onclick="vote('helpful')">👍 Helpful</button>
-            <button class="review-action-btn" onclick="vote('unhelpful')">👎 Not Helpful</button>
+            <button class="review-action-btn" onclick="vote('helpful')"><span class="icon-text"><span aria-hidden="true">👍</span><span>Helpful</span></span></button>
+            <button class="review-action-btn" onclick="vote('unhelpful')"><span class="icon-text"><span aria-hidden="true">👎</span><span>Not Helpful</span></span></button>
         </div>
         <p class="text-muted hidden" id="vote-status"></p>
         {{/if}}
@@ -100,8 +100,8 @@ async function vote(type) {
     const data = await res.json();
 
   if (res.ok) {
-    document.getElementById('helpful-count').textContent = '👍 ' + data.helpful;
-    document.getElementById('unhelpful-count').textContent = '👎 ' + data.unhelpful;
+        document.getElementById('helpful-count').innerHTML = '<span aria-hidden="true">👍</span><span>' + data.helpful + '</span>';
+        document.getElementById('unhelpful-count').innerHTML = '<span aria-hidden="true">👎</span><span>' + data.unhelpful + '</span>';
         const voteButtons = document.getElementById('vote-buttons');
         if (voteButtons) voteButtons.classList.add('hidden');
         const voteStatus = document.getElementById('vote-status');

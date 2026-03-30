@@ -7,7 +7,7 @@
         <div class="profile-info">
             <img src="{{avatarUrl profileUser.profilePicture}}"
                  alt="Profile Picture"
-                 style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid var(--primary-green);">
+                 class="profile-picture-lg">
             <div class="profile-details">
                 <h2>{{profileUser.name}}</h2>
                 <p class="text-muted">{{profileUser.bio}}</p>
@@ -15,12 +15,12 @@
             </div>
         </div>
         {{#if isOwnProfile}}
-        <div>
+        <div class="profile-actions">
             <button class="btn btn-outline" onclick="document.getElementById('edit-form').classList.toggle('hidden')">Edit Profile</button>
             <form action="/auth/logout" method="POST" style="display:inline;">
                 <button type="submit" class="btn btn-outline">Logout</button>
             </form>
-            <form action="/profile/{{profileUser._id}}/delete" method="POST" style="display:inline;" onsubmit="return confirmDeleteAccount();">
+            <form id="delete-account-form" action="/profile/{{profileUser._id}}/delete" method="POST" style="display:inline;">
                 <button type="submit" class="btn btn-outline" style="color:#dc2626; border-color:#dc2626;">Delete Account</button>
             </form>
         </div>
@@ -58,7 +58,7 @@
                 <p class="error-msg" id="edit-bio-error"></p>
             </div>
             <div class="form-group">
-                <label for="edit-profile-picture">Profile Picture (Optional)</label>
+                <label for="edit-profile-picture">Profile Picture <span class="optional-text">(Optional)</span></label>
                 <input type="file" id="edit-profile-picture" name="profilePicture" class="form-control" accept=".jpg,.jpeg,.png,.gif,.webp,image/*">
                 <p class="error-msg" id="edit-profile-picture-error"></p>
             </div>
@@ -79,7 +79,7 @@
                 <img src="/{{image}}" alt="{{name}}" class="card-image" onerror="this.src='https://via.placeholder.com/400x300?text={{name}}'">
                 <div class="card-content">
                     <h3>{{name}}</h3>
-                    <div class="card-rating">{{stars rating}} {{rating}}/5</div>
+                    <div class="card-rating">{{{stars rating}}} {{rating}}/5</div>
                     <div class="card-info">
                         <span class="price-range">{{priceRange}}</span> &bull; <span>{{location}}</span>
                     </div>
@@ -103,7 +103,8 @@
             <div class="review-header">
                 <div>
                     <h3>{{title}} {{#if edited}}<span class="badge badge-gold">Edited</span>{{/if}}</h3>
-                    <div class="card-rating">{{stars rating}} {{rating}}/5</div>
+                    <div class="review-author">By {{../profileUser.name}}</div>
+                    <div class="card-rating">{{{stars rating}}} {{rating}}/5</div>
                     <p class="text-muted">Review for <a href="/restaurants/{{restaurant.id}}">{{restaurant.name}}</a></p>
                 </div>
                 <div class="review-date">{{date}}</div>
@@ -133,6 +134,18 @@
     </div>
 </div>
 
+<div id="delete-account-modal" class="confirm-modal hidden" role="dialog" aria-modal="true" aria-labelledby="delete-account-title">
+    <div class="confirm-modal-content">
+        <h3 id="delete-account-title">Delete account</h3>
+        <p>Are you sure you want to delete your account?</p>
+        <p class="text-muted">This permanently deletes your profile and all your reviews.</p>
+        <div class="confirm-modal-actions">
+            <button type="button" id="cancel-delete-account" class="btn btn-outline">No</button>
+            <button type="button" id="confirm-delete-account" class="btn btn-primary" style="background:#dc2626;">Yes, Delete</button>
+        </div>
+    </div>
+</div>
+
 <script>
 function confirmDelete(id, title) {
   if (confirm('Delete your review "' + title + '"? This cannot be undone.')) {
@@ -140,8 +153,23 @@ function confirmDelete(id, title) {
   }
 }
 
-function confirmDeleteAccount() {
-    return confirm('Delete your account permanently? This will also delete all your reviews and cannot be undone.');
+const deleteAccountForm = document.getElementById('delete-account-form');
+const deleteAccountModal = document.getElementById('delete-account-modal');
+
+if (deleteAccountForm && deleteAccountModal) {
+    deleteAccountForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        deleteAccountModal.classList.remove('hidden');
+    });
+
+    document.getElementById('cancel-delete-account').addEventListener('click', function () {
+        deleteAccountModal.classList.add('hidden');
+    });
+
+    document.getElementById('confirm-delete-account').addEventListener('click', function () {
+        deleteAccountModal.classList.add('hidden');
+        deleteAccountForm.submit();
+    });
 }
 
 const editProfileForm = document.getElementById('edit-profile-form');

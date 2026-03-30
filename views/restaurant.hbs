@@ -6,7 +6,7 @@
             <span class="campus-badge {{campusClass restaurant.insideCampus}}">{{campusBadge restaurant.insideCampus}}</span>
             <h1>{{restaurant.name}}</h1>
             <div class="card-rating" style="font-size: 1.25rem; margin: 1rem 0;">
-                <span class="stars">{{stars restaurant.rating}}</span>
+                <span class="stars">{{{stars restaurant.rating}}}</span>
                 <span>{{restaurant.rating}}/5 ({{restaurant.ratingCount}} reviews)</span>
             </div>
             <div class="card-tags">
@@ -72,16 +72,16 @@
             <div class="review-header">
                 <div>
                     <h3>{{title}} {{#if edited}}<span class="badge badge-gold">Edited</span>{{/if}}</h3>
-                    <div class="card-rating">{{stars rating}} {{rating}}/5</div>
+                    <div class="review-author">By {{#if user.name}}{{user.name}}{{else}}Anonymous reviewer{{/if}}</div>
+                    <div class="card-rating">{{{stars rating}}} {{rating}}/5</div>
                 </div>
                 <div class="review-date">{{date}}</div>
             </div>
             <div class="review-body">{{truncate body 200}}</div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem;">
-                <div class="review-author">By {{#if user.name}}{{user.name}}{{else}}Anonymous reviewer{{/if}}</div>
-                <div style="display:flex; gap:1rem; font-size:0.875rem; color:var(--text-light);">
-                    <span>👍 {{helpful}} helpful</span>
-                    <span>👎 {{unhelpful}}</span>
+                <div style="display:flex; gap:1rem; font-size:0.875rem; color:var(--text-light); margin-left:auto;">
+                    <span class="icon-text"><span aria-hidden="true">👍</span><span>{{helpful}} helpful</span></span>
+                    <span class="icon-text"><span aria-hidden="true">👎</span><span>{{unhelpful}}</span></span>
                 </div>
             </div>
             {{#if ownerResponse}}

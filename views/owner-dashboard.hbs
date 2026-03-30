@@ -15,7 +15,7 @@
                 <img src="/{{image}}" alt="{{name}}" class="card-image" onerror="this.src='https://via.placeholder.com/400x300?text={{name}}'">
                 <div class="card-content">
                     <h3>{{name}}</h3>
-                    <div class="card-rating">{{stars rating}} {{rating}}/5 ({{ratingCount}} reviews)</div>
+                    <div class="card-rating">{{{stars rating}}} {{rating}}/5 ({{ratingCount}} reviews)</div>
                     <div class="card-info"><span>{{location}}</span></div>
                 </div>
             </div>
@@ -46,7 +46,7 @@
                     <td>{{date}}</td>
                     <td>{{restaurant.name}}</td>
                     <td>{{#if reviewer.name}}{{reviewer.name}}{{else}}Anonymous reviewer{{/if}}</td>
-                    <td>{{stars rating}} {{rating}}/5</td>
+                    <td>{{{stars rating}}} {{rating}}/5</td>
                     <td><a href="/reviews/{{_id}}">{{title}}</a></td>
                     <td>
                         {{#if ownerResponse}}

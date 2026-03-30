@@ -76,6 +76,41 @@ router.get('/search', async (req, res) => {
   });
 });
 
+// GET /search/suggestions
+router.get('/search/suggestions', async (req, res, next) => {
+  try {
+    const q = (req.query.q || '').trim();
+    if (q.length < 1) {
+      return res.json({ suggestions: [] });
+    }
+
+    const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const prefixRegex = new RegExp(`^${escaped}`, 'i');
+    const containsRegex = new RegExp(escaped, 'i');
+
+    const [prefixMatches, containsMatches] = await Promise.all([
+      Restaurant.find({ name: prefixRegex }).select('name').limit(6).lean(),
+      Restaurant.find({ name: containsRegex }).select('name').limit(10).lean()
+    ]);
+
+    const deduped = [];
+    const seen = new Set();
+    for (const candidate of [...prefixMatches, ...containsMatches]) {
+      const name = (candidate.name || '').trim();
+      const key = name.toLowerCase();
+      if (name && !seen.has(key)) {
+        seen.add(key);
+        deduped.push(name);
+      }
+      if (deduped.length >= 8) break;
+    }
+
+    return res.json({ suggestions: deduped });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 // GET /top-reviews
 router.get('/top-reviews', async (req, res, next) => {
   try {

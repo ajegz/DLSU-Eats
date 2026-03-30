@@ -5,6 +5,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const mongoose = require('mongoose');
 const path = require('path');
+const Handlebars = require('handlebars');
 
 const DEFAULT_AVATAR_PATH = '/assets/images/icons/default-avatar.svg';
 
@@ -37,7 +38,25 @@ app.engine('hbs', engine({
   layoutsDir: path.join(__dirname, 'views/layouts'),
   partialsDir: path.join(__dirname, 'views/partials'),
   helpers: {
-    stars: (rating) => '⭐'.repeat(Math.round(rating)),
+    stars: (rating) => {
+      const numericRating = Number(rating);
+      const safeRating = Number.isFinite(numericRating) ? Math.max(0, Math.min(5, numericRating)) : 0;
+      let starsMarkup = `<span class="star-rating" aria-label="${safeRating.toFixed(1)} out of 5 stars">`;
+
+      for (let i = 0; i < 5; i += 1) {
+        let fillPercent = 0;
+        if (safeRating >= i + 1) {
+          fillPercent = 100;
+        } else if (safeRating > i) {
+          fillPercent = Math.round((safeRating - i) * 100);
+        }
+
+        starsMarkup += `<span class="star" style="--fill:${fillPercent}%" aria-hidden="true">★</span>`;
+      }
+
+      starsMarkup += '</span>';
+      return new Handlebars.SafeString(starsMarkup);
+    },
     truncate: (str, len) => str && str.length > len ? str.substring(0, len) + '...' : str,
     assetPath: (value) => {
       const pathValue = (value || '').trim();

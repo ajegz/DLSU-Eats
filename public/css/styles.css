@@ -26,7 +26,8 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
   color: var(--text);
   background-color: var(--background);
 }
@@ -136,20 +137,23 @@ a:hover {
 .nav-links {
   display: flex;
   list-style: none;
-  gap: 2rem;
+  gap: 0.6rem;
+  align-items: center;
 }
 
 .nav-links a {
   color: var(--white);
   font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
+  padding: 0.52rem 0.95rem;
+  border-radius: 8px;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 
 .nav-links a:hover {
   background-color: var(--accent-green);
   color: var(--white);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
 }
 
 /* Container and Layout */
@@ -254,13 +258,13 @@ a:hover {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
   cursor: pointer;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 24px rgba(17, 24, 39, 0.14);
 }
 
 .card-image {
@@ -295,9 +299,9 @@ a:hover {
 .card-rating {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   margin-bottom: 0.75rem;
-  color: var(--gold);
+  color: var(--text-light);
   font-weight: 600;
 }
 
@@ -371,30 +375,33 @@ a:hover {
 
 .review-card {
   background-color: var(--white);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+  border: 1px solid rgba(229, 231, 235, 0.8);
 }
 
 .review-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: flex-start;
   margin-bottom: 1rem;
+  gap: 0.85rem;
 }
 
 .review-author {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   font-weight: 600;
   color: var(--text);
+  margin-top: 0.2rem;
 }
 
 .reviewer-avatar {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid var(--border);
@@ -403,9 +410,9 @@ a:hover {
 }
 
 .top-review-restaurant-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   object-fit: cover;
   border: 1px solid var(--border);
   background-color: #d1d5db;
@@ -432,7 +439,7 @@ a:hover {
 .review-action-btn {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.35rem;
   padding: 0.5rem 1rem;
   background-color: var(--background);
   border: 1px solid var(--border);
@@ -650,8 +657,8 @@ tr:hover {
 
 /* Stars */
 .stars {
-  color: var(--gold);
-  font-size: 1.125rem;
+  display: inline-flex;
+  align-items: center;
 }
 
 /* Utilities */
@@ -733,16 +740,16 @@ footer a:hover {
 /* Profile Section */
 .profile-header {
   background-color: var(--white);
-  padding: 2rem;
-  border-radius: 8px;
+  padding: 2rem 2rem 1.8rem;
+  border-radius: 12px;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 28px rgba(17, 24, 39, 0.08);
 }
 
 .profile-info {
   display: flex;
-  align-items: center;
-  gap: 1.5rem;
+  align-items: flex-start;
+  gap: 1rem;
 }
 
 .profile-avatar {
@@ -759,12 +766,13 @@ footer a:hover {
 }
 
 .profile-details h2 {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
+  line-height: 1.25;
 }
 
 .profile-details p {
   color: var(--text-light);
-  margin-bottom: 0;
+  margin-bottom: 0.35rem;
 }
 
 /* Dashboard */
@@ -1055,6 +1063,22 @@ footer a:hover {
   padding: 0;
 }
 
+.nav-btn-link {
+  color: var(--white);
+  font-weight: 500;
+  text-decoration: none;
+  padding: 0.52rem 0.95rem;
+  border-radius: 8px;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.nav-btn-link:hover {
+  background-color: var(--accent-green);
+  color: var(--white);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
 /* ===== Utility: Pagination ===== */
 .pagination {
   display: flex;
@@ -1070,6 +1094,7 @@ footer a:hover {
 .search-form .search-bar {
   display: flex;
   gap: 0.5rem;
+  align-items: center;
 }
 .search-form .search-bar .form-control {
   flex: 1;
@@ -1079,4 +1104,189 @@ footer a:hover {
 }
 .result-section + .result-section {
   margin-top: 2rem;
+}
+
+.star-rating {
+  display: inline-flex;
+  gap: 0.06rem;
+  line-height: 1;
+}
+
+.star {
+  --fill: 0%;
+  position: relative;
+  display: inline-block;
+  color: #d1d5db;
+  font-size: 1.15em;
+}
+
+.star::before {
+  content: '★';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--fill);
+  overflow: hidden;
+  color: #f6d75b;
+}
+
+.icon-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+}
+
+.optional-text {
+  font-style: italic;
+  font-weight: 400;
+}
+
+.profile-picture-lg {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary-green);
+  flex-shrink: 0;
+}
+
+.profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.confirm-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(17, 24, 39, 0.45);
+  z-index: 1500;
+  padding: 1rem;
+}
+
+.confirm-modal-content {
+  width: min(460px, 100%);
+  background: var(--white);
+  border-radius: 12px;
+  padding: 1.4rem;
+  box-shadow: 0 24px 40px rgba(17, 24, 39, 0.24);
+}
+
+.confirm-modal-content h3 {
+  margin-bottom: 0.35rem;
+}
+
+.confirm-modal-content p {
+  margin-bottom: 0.6rem;
+}
+
+.confirm-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.search-form {
+  position: relative;
+}
+
+.search-suggestions {
+  list-style: none;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 16px 30px rgba(17, 24, 39, 0.14);
+  padding: 0.35rem;
+  margin-top: 0.45rem;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.search-suggestion-btn {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 0.58rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.search-suggestion-btn:hover {
+  background: var(--light-green-tint);
+}
+
+.search-restaurant-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.search-result-card {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.search-result-card .card-image {
+  width: 240px;
+  min-width: 240px;
+  height: auto;
+  min-height: 180px;
+}
+
+.search-result-card .card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.review-date {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.review-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.container,
+.container-narrow {
+  padding-top: 2.2rem;
+  padding-bottom: 2.2rem;
+}
+
+@media (max-width: 768px) {
+  .search-result-card {
+    flex-direction: column;
+  }
+
+  .search-result-card .card-image {
+    width: 100%;
+    min-width: 100%;
+    min-height: 180px;
+  }
+
+  .review-header {
+    gap: 0.6rem;
+  }
+
+  .review-date {
+    margin-left: 0;
+  }
+
+  .profile-header {
+    padding: 1.2rem;
+  }
 }
